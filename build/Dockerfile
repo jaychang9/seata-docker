@@ -24,4 +24,3 @@ ENV EXTRA_JVM_ARGUMENTS="-XX:MaxDirectMemorySize=1024M"
 ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["bash","-f","/seata/bin/seata-server.sh"]
 EXPOSE 8091
-
