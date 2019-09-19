@@ -10,7 +10,7 @@ https://github.com/seata/seata-samples/tree/docker/springboot-dubbo-fescar
 ```sh
 git clone https://github.com/seata/seata-docker.git
 cd seata-docker
-docker build -t seata:0.5.1 .\build\
+docker build -t seata:0.8.1 .\build\
 ```
 
 ## 案例使用帮助
@@ -42,4 +42,10 @@ curl  -H "Content-Type: application/json" -X POST --data "{\"userId\":\"1\",\"co
 # 业务服务 客户端seata版本太低
 curl  -H "Content-Type: application/json" -X POST --data "{\"userId\":\"1\",\"commodityCode\":\"C201901140001\",\"count\":10,\"amount\":100}"   127.0.0.1:8104/business/dubbo/buy
  ```
+ 
+ ### docker启动seata-server
+ 
+ ```jshelllanguage
+docker run -d --name seata -p 8091:8091 -e JAVA_OPTS="-Dregistry.type=nacos -Dregistry.nacos.serverAddr=10.1.11.133:8848 -Dregistry.nacos.namespace=5a6e3d86-d130-4cf2-a365-a1af5b9fd7df -Dconfig.type=apollo -Dconfig.apollo.app.id=seata-server -Dconfig.apollo.apollo.meta=http://apollo.dev.chaomeifan.com" harbor.chaomeifan.com/lib/seata-server:0.8.1
+```
 

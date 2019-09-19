@@ -1,31 +1,27 @@
 # https://hub.docker.com/_/openjdk
-FROM centos:7.5.1804
+FROM openjdk:8-alpine
 
 # set label
-LABEL maintainer="seata <niao.shuai123@163.com>"
+LABEL maintainer="seata <jaychang1987@gmail.com>"
 
-# set environment
-ENV SEATA_USER="seata" \
-    JAVA_HOME="/usr/lib/jvm/java-1.8.0-openjdk" \
-    JAVA="/usr/lib/jvm/java-1.8.0-openjdk/bin/java" \
-    TIME_ZONE="Asia/Shanghai" 
+ARG SEATA_VERSION=0.8.1
 
-ARG SEATA_VERSION=0.5.1
-
-WORKDIR /$BASE_DIR
+WORKDIR /seata
 
 RUN set -x \
-    && yum update -y \
-    && yum install -y java-1.8.0-openjdk java-1.8.0-openjdk-devel wget iputils nc vim libcurl \
-    && wget  https://github.com/seata/seata/releases/download/v${SEATA_VERSION}/seata-server-${SEATA_VERSION}.tar.gz -P /home \
-    && mkdir /opt/seata \
-    && tar -xzvf /home/seata-server-${SEATA_VERSION}.tar.gz -C /opt/seata \
-    && rm -rf /home/seata-server-${SEATA_VERSION}.tar.gz \
-    && ln -snf /usr/share/zoneinfo/$TIME_ZONE /etc/localtime && echo '$TIME_ZONE' > /etc/timezone \
-    && yum clean all
-
+    && sed -i "s/http:\/\/dl-cdn.alpinelinux.org/https:\/\/mirrors.aliyun.com/g" /etc/apk/repositories \
+    && apk update \
+    && apk --no-cache add tzdata curl tini bash \
+    && wget  https://github.com/seata/seata/releases/download/v${SEATA_VERSION}/seata-server-${SEATA_VERSION}.tar.gz -P / \
+    && tar -xzvf /seata-server-${SEATA_VERSION}.tar.gz -C / \
+    && rm -rf /seata-server-${SEATA_VERSION}.tar.gz \
+    && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && echo "Asia/Shanghai" >  /etc/timezone \
+    && rm -rf /var/cache/apk/*
 # 设置额外参数
 ENV EXTRA_JVM_ARGUMENTS="-XX:MaxDirectMemorySize=1024M"
 
-ENTRYPOINT ["sh","/opt/seata/bin/seata-server.sh"]
+ENTRYPOINT ["/sbin/tini", "--"]
+CMD ["bash","-f","/seata/bin/seata-server.sh"]
 EXPOSE 8091
+
