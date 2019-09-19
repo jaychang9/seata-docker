@@ -11,6 +11,14 @@ https://github.com/seata/seata-samples/tree/docker/springboot-dubbo-fescar
 git clone https://github.com/seata/seata-docker.git
 cd seata-docker
 docker build -t seata:0.8.1 .\build\
+
+
+
+```
+指定seata-version，将如下${seata-version}改成特定版本即可
+```jshelllanguage
+docker build -t harbor.chaomeifan.com/library/seata:${seata-version} --build-arg seata-version=0.8.1 ./build
+docker push harbor.chaomeifan.com/library/seata:${seata-version}
 ```
 
 ## 案例使用帮助
