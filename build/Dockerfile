@@ -1,26 +1,24 @@
-# https://hub.docker.com/_/openjdk
 FROM openjdk:8-alpine
 
-# set label
 LABEL maintainer="seata <jaychang1987@gmail.com>"
 
-ARG SEATA_VERSION=0.8.1
-ARG DOWNLOAD_URL=https://github.com/seata/seata/releases/download/v${SEATA_VERSION}/seata-server-${SEATA_VERSION}.tar.gz
+ARG FILE
+
+ADD ${FILE} /
+
 WORKDIR /seata
 
 RUN set -x \
     && sed -i "s/http:\/\/dl-cdn.alpinelinux.org/https:\/\/mirrors.aliyun.com/g" /etc/apk/repositories \
     && apk update \
-    && apk --no-cache add tzdata curl tini bash \
-    && wget ${DOWNLOAD_URL} -P / \
-    && tar -xzvf /seata-server-${SEATA_VERSION}.tar.gz -C / \
-    && rm -rf /seata-server-${SEATA_VERSION}.tar.gz \
+    && apk --no-cache add tzdata curl tini \
     && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && echo "Asia/Shanghai" >  /etc/timezone \
     && rm -rf /var/cache/apk/*
 # 设置额外参数
 ENV EXTRA_JVM_ARGUMENTS="-XX:MaxDirectMemorySize=1024M"
+ENV HOST_ARG=""
 
 ENTRYPOINT ["/sbin/tini", "--"]
-CMD ["bash","-f","/seata/bin/seata-server.sh"]
+CMD ["sh","-c","/seata/bin/seata-server.sh ${HOST_ARG}"]
 EXPOSE 8091
